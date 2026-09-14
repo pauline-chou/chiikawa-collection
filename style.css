@@ -126,9 +126,8 @@ main {
 
 .collection {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 180px);
-    gap: 20px;
-    justify-content: start;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
 }
 
 /* =========================
@@ -155,7 +154,7 @@ main {
 ========================= */
 
 .item-image {
-    height: 160px;
+    height: 180px;
 
     display: flex;
     align-items: center;
@@ -218,23 +217,33 @@ main {
 ========================= */
 
 @media (max-width: 600px) {
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        overflow-x: hidden;
+    }
 
     main {
         width: 92%;
+        margin: 0 auto;
     }
 
     .collection {
-        grid-template-columns: repeat(2, 1fr);
+        width: 100%;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
     }
 
     .item {
         padding: 12px;
+        min-width: 0;
     }
 
     .item-image {
         height: 130px;
         font-size: 50px;
     }
-
 }
