@@ -18,52 +18,73 @@
     </header>
 
     <main>
+        <!-- 收藏總覽 -->
+        <section class="overview">
 
-        <section class="character">
-            <h2>💛 吉伊</h2>
-            <p>朋友的收藏</p>
+            <h2>🧸 我們的收藏</h2>
 
-            <div class="collection">
-                <div class="item">
-                    <h3>吉伊娃娃 01</h3>
-                    <label>
-                        <input type="checkbox">
-                        已收藏
-                    </label>
-                </div>
+            <p id="collection-count">目前共收藏 0 件</p>
 
-                <div class="item">
-                    <h3>吉伊娃娃 02</h3>
-                    <label>
-                        <input type="checkbox">
-                        已收藏
-                    </label>
-                </div>
+            <div class="progress">
+                <div class="progress-bar"></div>
             </div>
+
         </section>
 
 
-        <section class="character">
-            <h2>💙 小八</h2>
-            <p>我的收藏</p>
+        <!-- 搜尋與篩選 -->
+        <section class="filters">
 
-            <div class="collection">
-                <div class="item">
-                    <h3>小八娃娃 01</h3>
-                    <label>
-                        <input type="checkbox">
-                        已收藏
-                    </label>
+            <h2>🔎 找找看</h2>
+
+            <input
+                type="text"
+                id="search-input"
+                placeholder="搜尋收藏名稱..."
+            >
+
+            <div class="filter-group">
+
+                <h3>角色</h3>
+
+                <div class="filter-buttons">
+
+                    <button data-character="all">全部</button>
+                    <button data-character="吉伊">吉伊</button>
+                    <button data-character="小八">小八</button>
+                    <button data-character="其他">其他</button>
+
                 </div>
 
-                <div class="item">
-                    <h3>小八娃娃 02</h3>
-                    <label>
-                        <input type="checkbox">
-                        已收藏
-                    </label>
-                </div>
             </div>
+
+
+            <div class="filter-group">
+
+                <h3>收藏者</h3>
+
+                <div class="filter-buttons">
+
+                    <button data-owner="all">全部</button>
+                    <button data-owner="我">我</button>
+                    <button data-owner="朋友">朋友</button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- 收藏牆 -->
+        <section class="collection-section">
+
+            <h2>✨ 收藏牆</h2>
+
+            <div class="collection" id="collection-list">
+     
+            </div>
+
         </section>
 
     </main>
