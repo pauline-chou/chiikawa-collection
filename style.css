@@ -574,8 +574,6 @@ main {
    Owner Buttons
    ======================================== */
 
-
-
 .owner-section {
     margin-top: 2px;
 }
@@ -593,6 +591,7 @@ main {
 }
 
 .owner-toggle {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -604,6 +603,7 @@ main {
     border: 1px solid #ded4c9;
     border-radius: 999px;
     cursor: pointer;
+
     transition:
         background 0.2s ease,
         border-color 0.2s ease,
@@ -622,108 +622,145 @@ main {
     flex: 0 0 7px;
     border-radius: 50%;
     background: #d5cbc0;
+
     transition:
         transform 0.2s ease,
         background 0.2s ease;
 }
 
-/* ========================================
-   藍色
-   ======================================== */
-
-.owner-toggle:not(.alice) {
-    background: var(--blue-soft);
-    border-color: #c3dde1;
-    color: #66868b;
-}
-
-.owner-toggle:not(.alice) .dot {
-    background: #9fcbd1;
-}
-
-.owner-toggle:not(.alice):hover {
-    transform: translateY(-2px);
-    background: #d5eaed;
-    border-color: #8fbec5;
-    color: #4f747a;
-    box-shadow: 0 4px 10px rgba(80, 120, 125, 0.13);
-}
-
-.owner-toggle:not(.alice):hover .dot {
-    transform: scale(1.25);
-    background: #6faab3;
-}
-
-/* Pauline 已擁有 */
-
-.owner-toggle:not(.alice).owned {
-    background: #c9e3e6;
-    border-color: #acd1d6;
-    color: #567d83;
-    box-shadow: 0 3px 9px rgba(80, 120, 125, 0.12);
-}
-
-.owner-toggle:not(.alice).owned .dot {
-    background: #87b9c0;
-}
-
-.owner-toggle:not(.alice).owned:hover {
-    background: #bddcdf;
-    border-color: #9fc7cd;
-    color: #4e7379;
-}
 
 /* ========================================
-   粉色
+   Player 1 — 藍色
    ======================================== */
 
-.owner-toggle.alice {
-    background: var(--pink-soft);
-    border-color: #e6c9cc;
-    color: #927074;
+/* 未擁有 */
+.owner-toggle.player1 {
+    background: #f3fafb;
+    border-color: #c8e1e4;
+    color: #d5cbc0;
 }
 
-.owner-toggle.alice .dot {
-    background: #dfb9be;
+.owner-toggle.player1 .dot {
+    background: #a9cfd3;
 }
 
-.owner-toggle.alice:hover {
+/* Hover */
+.owner-toggle.player1:hover {
     transform: translateY(-2px);
-    background: #f8dfe1;
-    border-color: #d5aeb2;
-    color: #805d62;
-    box-shadow: 0 4px 10px rgba(180, 125, 130, 0.12);
+    background: #e5f4f6;
+    border-color: #a8ced3;
+    color: #63868b;
+    box-shadow: 0 4px 10px rgba(80, 120, 125, 0.11);
 }
 
-.owner-toggle.alice:hover .dot {
-    transform: scale(1.25);
-    background: #cc969d;
-}
-
-/* Alice 已擁有 */
-
-.owner-toggle.alice.owned {
-    background: #f3d0d3;
-    border-color: #dfb8bd;
-    color: #805b60;
-    box-shadow: 0 3px 9px rgba(180, 125, 130, 0.12);
-}
-
-.owner-toggle.alice.owned .dot {
-    background: #d69da5;
-}
-
-.owner-toggle.alice.owned:hover {
-    background: #edc4c8;
-    border-color: #d7aab0;
-    color: #765258;
-}
-
-.owner-toggle.alice.owned:hover .dot {
-    background: #ca919a;
+.owner-toggle.player1:hover .dot {
     transform: scale(1.2);
+    background: #83b8bf;
 }
 
+
+/* 已擁有 */
+.owner-toggle.player1.owned {
+    background: #c5e1e5;
+    border-color: #91c3c9;
+    color: #4f777d;
+    box-shadow:
+        0 3px 8px rgba(80, 120, 125, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    font-weight: 500;
+}
+
+.owner-toggle.player1.owned .dot {
+    width: 9px;
+    height: 9px;
+    flex-basis: 9px;
+    background: #70aab2;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.45);
+}
+
+/* 已擁有的小勾 */
+.owner-toggle.player1.owned .dot::after {
+    content: "✓";
+    position: absolute;
+    font-size: 7px;
+    font-weight: 700;
+    line-height: 1;
+    color: #ffffff;
+    transform: translate(-0.5px, -0.5px);
+}
+
+.owner-toggle.player1.owned:hover {
+    background: #b8d9de;
+    border-color: #82b8bf;
+    color: #486f75;
+}
+
+
+/* ========================================
+   Player 2 — 粉色
+   ======================================== */
+
+/* 未擁有 */
+.owner-toggle.player2 {
+    background: #fff5f5;
+    border-color: #e7cbce;
+    color: #d5cbc0;
+}
+
+.owner-toggle.player2 .dot {
+    background: #dfb8be;
+}
+
+/* Hover */
+.owner-toggle.player2:hover {
+    transform: translateY(-2px);
+    background: #fce7e9;
+    border-color: #ddb3b8;
+    color: #8d686d;
+    box-shadow: 0 4px 10px rgba(180, 125, 130, 0.11);
+}
+
+.owner-toggle.player2:hover .dot {
+    transform: scale(1.2);
+    background: #cf929b;
+}
+
+
+/* 已擁有 */
+.owner-toggle.player2.owned {
+    background: #f0cbd0;
+    border-color: #dbaab1;
+    color: #7d555b;
+    box-shadow:
+        0 3px 8px rgba(180, 125, 130, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    font-weight: 500;
+}
+
+.owner-toggle.player2.owned .dot {
+    width: 9px;
+    height: 9px;
+    flex-basis: 9px;
+    background: #c9828d;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.45);
+}
+
+/* 已擁有的小勾 */
+.owner-toggle.player2.owned .dot::after {
+    content: "✓";
+    position: absolute;
+    font-size: 7px;
+    font-weight: 700;
+    line-height: 1;
+    color: #ffffff;
+    transform: translate(-0.5px, -0.5px);
+}
+
+.owner-toggle.player2.owned:hover {
+    background: #e9bdc3;
+    border-color: #d39da5;
+    color: #734c52;
+}
 
 
 

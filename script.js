@@ -137,10 +137,10 @@ function renderOwnerFilters() {
             let dotClass = "";
 
             if (index === 0) {
-                dotClass = "pauline";
+                dotClass = "player1";
             }
             else if (index === 1) {
-                dotClass = "alice";
+                dotClass = "player2";
             }
 
 
@@ -742,9 +742,11 @@ function renderCollection(data) {
 
                             let extraClass = "";
 
-                            if (index === 1) {
-                                extraClass =
-                                    "alice";
+                            if (index === 0) {
+                                extraClass = "player1";
+                            }
+                            else if (index === 1) {
+                                extraClass = "player2";
                             }
 
 
