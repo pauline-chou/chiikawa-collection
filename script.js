@@ -1,3 +1,4 @@
+
 // ==============================
 // Supabase 設定
 // ==============================
@@ -14,7 +15,10 @@ const supabaseClient =
         SUPABASE_KEY
     );
 
-console.log("Supabase Key 是否存在：", !!SUPABASE_KEY);
+console.log(
+    "Supabase Key 是否存在：",
+    !!SUPABASE_KEY
+);
 
 
 // ==============================
@@ -92,7 +96,7 @@ function renderOwnerFilters() {
 
 
     // --------------------------
-    // 全部
+    // All
     // --------------------------
 
     const allButton =
@@ -162,6 +166,10 @@ function renderOwnerFilters() {
             );
 
 
+            // --------------------------
+            // 收藏者按鈕
+            // --------------------------
+
             button.addEventListener(
                 "click",
                 function () {
@@ -175,48 +183,15 @@ function renderOwnerFilters() {
                     );
 
 
+                    // 更新進度條
+                    updateStats();
+
+
+                    // 更新收藏品篩選
                     filterCollection();
 
                 }
             );
-
-        }
-    );
-
-
-    // --------------------------
-    // Both
-    // --------------------------
-
-    const bothButton =
-        document.createElement("button");
-
-    bothButton.className =
-        "filter-button";
-
-    bothButton.dataset.owner =
-        "both";
-
-    bothButton.textContent =
-        "Both";
-
-
-    filterContainer.appendChild(
-        bothButton
-    );
-
-
-    bothButton.addEventListener(
-        "click",
-        function () {
-
-            selectedOwner = "both";
-
-            updateOwnerFilterActive(
-                bothButton
-            );
-
-            filterCollection();
 
         }
     );
@@ -232,10 +207,17 @@ function renderOwnerFilters() {
 
             selectedOwner = "all";
 
+
             updateOwnerFilterActive(
                 allButton
             );
 
+
+            // 更新進度條
+            updateStats();
+
+
+            // 更新收藏品篩選
             filterCollection();
 
         }
@@ -471,17 +453,17 @@ function isOwnedBy(
 
 }
 
+
 // ==============================
 // 取得收藏者
 // ==============================
 
 async function loadMembers() {
 
-    console.log("正在取得 members...");
+    console.log(
+        "正在取得 members..."
+    );
 
-    // --------------------------
-    // 取得所有 members
-    // --------------------------
 
     const {
         data,
@@ -517,7 +499,8 @@ async function loadMembers() {
     // 儲存成員資料
     // --------------------------
 
-    membersData = data || [];
+    membersData =
+        data || [];
 
 
     console.log(
@@ -531,16 +514,22 @@ async function loadMembers() {
     // --------------------------
 
     const memberNamesElement =
-        document.getElementById("memberNames");
+        document.getElementById(
+            "memberNames"
+        );
 
 
     if (memberNamesElement) {
 
         memberNamesElement.textContent =
             membersData
-                .map(function (member) {
-                    return member.name;
-                })
+                .map(
+                    function (member) {
+
+                        return member.name;
+
+                    }
+                )
                 .join(" × ");
 
     }
@@ -553,12 +542,6 @@ async function loadMembers() {
     renderOwnerFilters();
 
 }
-
-
-
-
-
-
 
 
 // ==============================
@@ -742,11 +725,19 @@ function renderCollection(data) {
 
                             let extraClass = "";
 
+
                             if (index === 0) {
-                                extraClass = "player1";
+
+                                extraClass =
+                                    "player1";
+
                             }
+
                             else if (index === 1) {
-                                extraClass = "player2";
+
+                                extraClass =
+                                    "player2";
+
                             }
 
 
@@ -870,12 +861,18 @@ async function toggleOwnership(
 ) {
 
     // 防止連續點擊
-    if (button.dataset.loading === "true") {
+    if (
+        button.dataset.loading ===
+        "true"
+    ) {
+
         return;
+
     }
 
 
-    button.dataset.loading = "true";
+    button.dataset.loading =
+        "true";
 
 
     const itemId =
@@ -899,7 +896,8 @@ async function toggleOwnership(
 
     if (!item) {
 
-        button.dataset.loading = "false";
+        button.dataset.loading =
+            "false";
 
         return;
 
@@ -973,7 +971,8 @@ async function toggleOwnership(
 
                     return String(
                         ownership.member_id
-                    ) !== String(memberId);
+                    ) !==
+                        String(memberId);
 
                 }
             );
@@ -1093,7 +1092,6 @@ function filterCollection() {
         collectionData.filter(
             function (item) {
 
-
                 // ==================
                 // 搜尋
                 // ==================
@@ -1121,35 +1119,14 @@ function filterCollection() {
                 let matchOwner = true;
 
 
-                // 全部
+                // All
+                // 顯示全部收藏品
 
                 if (
                     selectedOwner === "all"
                 ) {
 
                     matchOwner = true;
-
-                }
-
-
-                // Both
-
-                else if (
-                    selectedOwner === "both"
-                ) {
-
-                    matchOwner =
-                        membersData.length >= 2 &&
-                        membersData.every(
-                            function (member) {
-
-                                return isOwnedBy(
-                                    item,
-                                    member.id
-                                );
-
-                            }
-                        );
 
                 }
 
@@ -1246,20 +1223,80 @@ characterButtons.forEach(
 
 function updateStats() {
 
+    // --------------------------
+    // 分母
+    // --------------------------
+    // items 表總數
+
     const total =
         collectionData.length;
 
 
-    const owned =
-        collectionData.filter(
-            function (item) {
+    let owned = 0;
 
-                return item.ownerships &&
-                    item.ownerships.length > 0;
+
+    // ==========================
+    // All
+    // ==========================
+    // 所有 members 收藏數加總
+    //
+    // 例如：
+    // Alice 20
+    // Bob   15
+    // All   35
+    //
+    // 同一個 item 如果兩人都有，
+    // All 會算 2 件。
+
+    if (
+        selectedOwner === "all"
+    ) {
+
+        membersData.forEach(
+            function (member) {
+
+                owned +=
+                    collectionData.filter(
+                        function (item) {
+
+                            return isOwnedBy(
+                                item,
+                                member.id
+                            );
+
+                        }
+                    ).length;
 
             }
-        ).length;
+        );
 
+    }
+
+
+    // ==========================
+    // 指定收藏者
+    // ==========================
+
+    else {
+
+        owned =
+            collectionData.filter(
+                function (item) {
+
+                    return isOwnedBy(
+                        item,
+                        selectedOwner
+                    );
+
+                }
+            ).length;
+
+    }
+
+
+    // ==========================
+    // 百分比
+    // ==========================
 
     const percent =
         total === 0
@@ -1268,6 +1305,10 @@ function updateStats() {
                 (owned / total) * 100
             );
 
+
+    // ==========================
+    // 更新 HTML
+    // ==========================
 
     totalCount.textContent =
         total;
@@ -1345,3 +1386,4 @@ async function init() {
 
 
 init();
+
