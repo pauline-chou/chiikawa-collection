@@ -14,16 +14,15 @@ const supabaseClient =
         SUPABASE_KEY
     );
 
+console.log("Supabase Key 是否存在：", !!SUPABASE_KEY);
+
 
 // ==============================
-// 取得 HTML 元素
+// HTML 元素
 // ==============================
 
 const collectionList =
     document.querySelector("#collection-list");
-
-const collectionCount =
-    document.querySelector("#collection-count");
 
 const searchInput =
     document.querySelector("#search-input");
@@ -33,6 +32,21 @@ const characterButtons =
 
 const ownerButtons =
     document.querySelectorAll("[data-owner]");
+
+const ownedCount =
+    document.querySelector("#owned-count");
+
+const totalCount =
+    document.querySelector("#total-count");
+
+const progressPercent =
+    document.querySelector("#progress-percent");
+
+const progressBar =
+    document.querySelector("#progress-bar");
+
+const resultCount =
+    document.querySelector("#result-count");
 
 
 // ==============================
@@ -51,143 +65,484 @@ let collectionData = [];
 
 
 // ==============================
-// 從 Supabase 取得收藏資料
+// 收藏者資料
 // ==============================
 
-async function loadCollection() {
+let membersData = [];
 
-    console.log("正在從 Supabase 取得資料...");
 
-    const { data, error } = await supabaseClient
-        .from("items")
-        .select(`
-            id,
-            name,
-            image_url,
-            character_id,
-            region_id,
-            series_id,
-            characters (
+// ==============================
+// 取得收藏者
+// ==============================
+
+async function loadMembers() {
+
+    console.log("正在取得 members...");
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("members")
+            .select(`
+                id,
                 name
-            ),
-            regions (
-                name
-            ),
-            series (
-                name
-            ),
-            ownerships (
-                member_id,
-                members (
-                    name
-                )
-            ),
-            item_limited_types (
-                limited_types (
-                    name
-                )
-            )
-        `);
+            `)
+            .order("id");
+
 
     if (error) {
 
-        console.error("Supabase 讀取失敗：", error);
-
-        collectionList.innerHTML =
-            "<p>資料讀取失敗，請打開 Console 查看錯誤。</p>";
+        console.error(
+            "members 讀取失敗：",
+            error
+        );
 
         return;
+
     }
 
-    console.log("Supabase 資料：", data);
+
+    membersData = data || [];
 
 
-    // ==============================
-    // 將 Supabase 資料轉成網頁原本使用的格式
-    // ==============================
-
-    collectionData = data.map(function (item) {
-
-        const owners =
-            item.ownerships
-                ? item.ownerships.map(function (ownership) {
-                    return ownership.members.name;
-                })
-                : [];
+    console.log(
+        "收藏者：",
+        membersData
+    );
 
 
-        const limitedTypes =
-            item.item_limited_types
-                ? item.item_limited_types.map(function (type) {
-                    return type.limited_types.name;
-                })
-                : [];
-
-
-        return {
-
-            id: item.id,
-
-            name: item.name,
-
-            character:
-                item.characters
-                    ? item.characters.name
-                    : "",
-
-            region:
-                item.regions
-                    ? item.regions.name
-                    : "",
-
-            project:
-                item.series
-                    ? item.series.name
-                    : "",
-
-            limitedType:
-                limitedTypes.join("、"),
-
-            owner:
-                owners.join("、"),
-
-            owners: owners,
-
-            status:
-                owners.length > 0
-                    ? "owned"
-                    : "",
-
-            image:
-                item.image_url || "",
-
-            features: [],
-
-            location: "",
-
-            note: ""
-
-        };
-
-    });
-
-
-    console.log("轉換後的收藏資料：", collectionData);
-
-
-    // ==============================
-    // 顯示收藏
-    // ==============================
-
-    renderCollection(collectionData);
-
-    updateCollectionCount();
+    renderOwnerFilters();
 
 }
 
 
 // ==============================
-// 顯示收藏卡片
+// 建立收藏者篩選按鈕
+// ==============================
+
+function renderOwnerFilters() {
+
+    const filterContainer =
+        document.querySelector(
+            '[data-owner="all"]'
+        )?.parentElement;
+
+
+    if (!filterContainer) {
+        return;
+    }
+
+
+    filterContainer.innerHTML = "";
+
+
+    // --------------------------
+    // 全部
+    // --------------------------
+
+    const allButton =
+        document.createElement("button");
+
+    allButton.className =
+        "filter-button active";
+
+    allButton.dataset.owner =
+        "all";
+
+    allButton.textContent =
+        "All";
+
+
+    filterContainer.appendChild(
+        allButton
+    );
+
+
+    // --------------------------
+    // 每個收藏者
+    // --------------------------
+
+    membersData.forEach(
+        function (member, index) {
+
+            const button =
+                document.createElement("button");
+
+            button.className =
+                "filter-button";
+
+            button.dataset.owner =
+                String(member.id);
+
+
+            // 第一個人使用藍色
+            // 第二個人使用粉色
+            // 其他人使用一般樣式
+
+            let dotClass = "";
+
+            if (index === 0) {
+                dotClass = "pauline";
+            }
+            else if (index === 1) {
+                dotClass = "alice";
+            }
+
+
+            button.innerHTML = `
+
+                ${
+                    dotClass
+                        ? `<span class="owner-dot ${dotClass}"></span>`
+                        : ""
+                }
+
+                ${escapeHTML(member.name)}
+
+            `;
+
+
+            filterContainer.appendChild(
+                button
+            );
+
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    selectedOwner =
+                        String(member.id);
+
+
+                    updateOwnerFilterActive(
+                        button
+                    );
+
+
+                    filterCollection();
+
+                }
+            );
+
+        }
+    );
+
+
+    // --------------------------
+    // Both
+    // --------------------------
+
+    const bothButton =
+        document.createElement("button");
+
+    bothButton.className =
+        "filter-button";
+
+    bothButton.dataset.owner =
+        "both";
+
+    bothButton.textContent =
+        "Both";
+
+
+    filterContainer.appendChild(
+        bothButton
+    );
+
+
+    bothButton.addEventListener(
+        "click",
+        function () {
+
+            selectedOwner = "both";
+
+            updateOwnerFilterActive(
+                bothButton
+            );
+
+            filterCollection();
+
+        }
+    );
+
+
+    // --------------------------
+    // All button
+    // --------------------------
+
+    allButton.addEventListener(
+        "click",
+        function () {
+
+            selectedOwner = "all";
+
+            updateOwnerFilterActive(
+                allButton
+            );
+
+            filterCollection();
+
+        }
+    );
+
+}
+
+
+// ==============================
+// 收藏者篩選 active 狀態
+// ==============================
+
+function updateOwnerFilterActive(
+    activeButton
+) {
+
+    const buttons =
+        document.querySelectorAll(
+            "[data-owner]"
+        );
+
+
+    buttons.forEach(
+        function (button) {
+
+            button.classList.remove(
+                "active"
+            );
+
+        }
+    );
+
+
+    activeButton.classList.add(
+        "active"
+    );
+
+}
+
+
+// ==============================
+// 從 Supabase 取得收藏品
+// ==============================
+
+async function loadCollection() {
+
+    console.log(
+        "正在從 Supabase 取得 items..."
+    );
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("items")
+            .select(`
+                id,
+                name,
+                image_url,
+                character_id,
+                region_id,
+                series_id,
+
+                characters (
+                    name
+                ),
+
+                regions (
+                    name
+                ),
+
+                series (
+                    name
+                ),
+
+                ownerships (
+                    member_id,
+
+                    members (
+                        id,
+                        name
+                    )
+                ),
+
+                item_limited_types (
+                    limited_types (
+                        name
+                    )
+                )
+            `);
+
+
+    // ==========================
+    // 錯誤
+    // ==========================
+
+    if (error) {
+
+        console.error(
+            "Supabase 讀取失敗：",
+            error
+        );
+
+
+        collectionList.innerHTML = `
+
+            <div class="empty-message">
+
+                資料讀取失敗<br>
+
+                請打開 Console 查看錯誤。
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    console.log(
+        "Supabase 原始資料：",
+        data
+    );
+
+
+    // ==========================
+    // 整理資料
+    // ==========================
+
+    collectionData =
+        (data || []).map(
+            function (item) {
+
+                const ownerships =
+                    item.ownerships || [];
+
+
+                const limitedTypes =
+                    item.item_limited_types
+                        ? item.item_limited_types
+                            .map(
+                                function (type) {
+
+                                    return type.limited_types
+                                        ? type.limited_types.name
+                                        : "";
+
+                                }
+                            )
+                            .filter(Boolean)
+
+                        : [];
+
+
+                return {
+
+                    id:
+                        item.id,
+
+                    name:
+                        item.name,
+
+                    image:
+                        item.image_url || "",
+
+
+                    character:
+                        item.characters
+                            ? item.characters.name
+                            : "",
+
+
+                    region:
+                        item.regions
+                            ? item.regions.name
+                            : "",
+
+
+                    project:
+                        item.series
+                            ? item.series.name
+                            : "",
+
+
+                    limitedType:
+                        limitedTypes.join("、"),
+
+
+                    ownerships:
+                        ownerships
+
+                };
+
+            }
+        );
+
+
+    console.log(
+        "整理後收藏資料：",
+        collectionData
+    );
+
+
+    updateStats();
+
+    filterCollection();
+
+}
+
+
+// ==============================
+// 判斷某件物品是否被某人收藏
+// ==============================
+
+function isOwnedBy(
+    item,
+    memberId
+) {
+
+    return item.ownerships.some(
+        function (ownership) {
+
+            return String(
+                ownership.member_id
+            ) === String(memberId);
+
+        }
+    );
+
+}
+
+
+// ==============================
+// 取得收藏者名稱
+// ==============================
+
+function getOwnerNames(item) {
+
+    return item.ownerships
+        .map(
+            function (ownership) {
+
+                return ownership.members
+                    ? ownership.members.name
+                    : "";
+
+            }
+        )
+        .filter(Boolean);
+
+}
+
+
+// ==============================
+// 顯示收藏品
 // ==============================
 
 function renderCollection(data) {
@@ -195,89 +550,616 @@ function renderCollection(data) {
     collectionList.innerHTML = "";
 
 
-    data.forEach(function (item) {
-
-        const card =
-            document.createElement("div");
-
-        card.classList.add("item");
+    resultCount.textContent =
+        `${data.length} items`;
 
 
-        card.innerHTML = `
+    // ==========================
+    // 沒有結果
+    // ==========================
 
-            <div class="item-image">
+    if (data.length === 0) {
 
-                ${
-                    item.image
-                        ? `<img src="${item.image}" alt="${item.name}">`
-                        : "🧸"
-                }
+        collectionList.innerHTML = `
+
+            <div class="empty-message">
+
+                找不到符合條件的收藏 ♡
 
             </div>
-
-
-            <h3>${item.name}</h3>
-
-
-            <div class="tags">
-
-                ${
-                    item.character
-                        ? `<span>${item.character}</span>`
-                        : ""
-                }
-
-
-                ${
-                    item.project
-                        ? `<span>${item.project}</span>`
-                        : ""
-                }
-
-
-                ${
-                    item.limitedType
-                        ? `<span>${item.limitedType}</span>`
-                        : ""
-                }
-
-
-                ${
-                    item.region
-                        ? `<span>${item.region}</span>`
-                        : ""
-                }
-
-            </div>
-
-
-            <p>
-                👤 ${
-                    item.owner
-                        ? item.owner
-                        : "尚未收藏"
-                }
-            </p>
-
-
-            <label>
-
-                <input
-                    type="checkbox"
-                    ${item.status === "owned" ? "checked" : ""}
-                    disabled
-                >
-
-                已收藏
-
-            </label>
 
         `;
 
+        return;
 
-        collectionList.appendChild(card);
+    }
 
-    });
+
+    // ==========================
+    // 每件收藏
+    // ==========================
+
+    data.forEach(
+        function (item) {
+
+            const card =
+                document.createElement("article");
+
+
+            card.className =
+                "item";
+
+
+            // ======================
+            // 圖片
+            // ======================
+
+            let imageHTML;
+
+
+            if (item.image) {
+
+                imageHTML = `
+
+                    <img
+                        src="${escapeHTML(item.image)}"
+                        alt="${escapeHTML(item.name)}"
+                        loading="lazy"
+                    >
+
+                `;
+
+            }
+
+            else {
+
+                imageHTML = `
+
+                    <span class="item-image-placeholder">
+                        ♡
+                    </span>
+
+                `;
+
+            }
+
+
+            // ======================
+            // Tags
+            // ======================
+
+            const tags = [];
+
+
+            if (item.character) {
+
+                tags.push(
+                    item.character
+                );
+
+            }
+
+
+            if (item.limitedType) {
+
+                tags.push(
+                    item.limitedType
+                );
+
+            }
+
+
+            if (item.region) {
+
+                tags.push(
+                    item.region
+                );
+
+            }
+
+
+            const tagsHTML =
+                tags.length > 0
+
+                    ? `
+
+                        <div class="tags">
+
+                            ${tags
+                                .map(
+                                    function (tag) {
+
+                                        return `
+                                            <span>
+                                                ${escapeHTML(tag)}
+                                            </span>
+                                        `;
+
+                                    }
+                                )
+                                .join("")}
+
+                        </div>
+
+                    `
+
+                    : "";
+
+
+            // ======================
+            // 系列
+            // ======================
+
+            const seriesHTML =
+                item.project
+
+                    ? `
+
+                        <p class="item-series">
+                            ${escapeHTML(item.project)}
+                        </p>
+
+                    `
+
+                    : "";
+
+
+            // ======================
+            // 收藏者按鈕
+            // ======================
+
+            const ownerButtonsHTML =
+                membersData
+                    .map(
+                        function (member, index) {
+
+                            const owned =
+                                isOwnedBy(
+                                    item,
+                                    member.id
+                                );
+
+
+                            let extraClass = "";
+
+                            if (index === 1) {
+                                extraClass =
+                                    "alice";
+                            }
+
+
+                            return `
+
+                                <button
+                                    class="
+                                        owner-toggle
+                                        ${extraClass}
+                                        ${owned ? "owned" : ""}
+                                    "
+
+                                    data-item-id="${item.id}"
+
+                                    data-member-id="${member.id}"
+                                >
+
+                                    <span class="dot"></span>
+
+                                    ${escapeHTML(member.name)}
+
+                                </button>
+
+                            `;
+
+                        }
+                    )
+                    .join("");
+
+
+            // ======================
+            // Card HTML
+            // ======================
+
+            card.innerHTML = `
+
+                <div class="item-image">
+
+                    ${imageHTML}
+
+                </div>
+
+
+                <div class="item-info">
+
+                    <h3 class="item-name">
+                        ${escapeHTML(item.name)}
+                    </h3>
+
+
+                    ${seriesHTML}
+
+
+                    ${tagsHTML}
+
+
+                    <div class="owner-section">
+
+                        <span class="owner-title">
+                            OWNED BY
+                        </span>
+
+
+                        <div class="owner-buttons">
+
+                            ${ownerButtonsHTML}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            collectionList.appendChild(
+                card
+            );
+
+        }
+    );
+
+
+    // ==========================
+    // 綁定收藏者按鈕
+    // ==========================
+
+    const ownerToggles =
+        document.querySelectorAll(
+            ".owner-toggle"
+        );
+
+
+    ownerToggles.forEach(
+        function (button) {
+
+            button.addEventListener(
+                "click",
+                async function () {
+
+                    await toggleOwnership(
+                        button
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+// ==============================
+// 新增 / 刪除收藏
+// ==============================
+
+async function toggleOwnership(
+    button
+) {
+
+    // 防止連續點擊
+    if (button.dataset.loading === "true") {
+        return;
+    }
+
+
+    button.dataset.loading = "true";
+
+
+    const itemId =
+        button.dataset.itemId;
+
+
+    const memberId =
+        button.dataset.memberId;
+
+
+    const item =
+        collectionData.find(
+            function (item) {
+
+                return String(item.id) ===
+                    String(itemId);
+
+            }
+        );
+
+
+    if (!item) {
+
+        button.dataset.loading = "false";
+
+        return;
+
+    }
+
+
+    const currentlyOwned =
+        isOwnedBy(
+            item,
+            memberId
+        );
+
+
+    // ==========================
+    // 取消收藏
+    // ==========================
+
+    if (currentlyOwned) {
+
+        console.log(
+            "DELETE ownerships:",
+            itemId,
+            memberId
+        );
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("ownerships")
+                .delete()
+                .eq(
+                    "item_id",
+                    itemId
+                )
+                .eq(
+                    "member_id",
+                    memberId
+                );
+
+
+        if (error) {
+
+            console.error(
+                "取消收藏失敗：",
+                error
+            );
+
+
+            alert(
+                "取消收藏失敗，請稍後再試。"
+            );
+
+
+            button.dataset.loading =
+                "false";
+
+            return;
+
+        }
+
+
+        // --------------------------
+        // 更新前端資料
+        // --------------------------
+
+        item.ownerships =
+            item.ownerships.filter(
+                function (ownership) {
+
+                    return String(
+                        ownership.member_id
+                    ) !== String(memberId);
+
+                }
+            );
+
+
+        button.classList.remove(
+            "owned"
+        );
+
+    }
+
+
+    // ==========================
+    // 新增收藏
+    // ==========================
+
+    else {
+
+        console.log(
+            "INSERT ownerships:",
+            itemId,
+            memberId
+        );
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("ownerships")
+                .insert({
+
+                    item_id:
+                        itemId,
+
+                    member_id:
+                        memberId
+
+                })
+                .select(`
+                    member_id,
+
+                    members (
+                        id,
+                        name
+                    )
+                `)
+                .single();
+
+
+        if (error) {
+
+            console.error(
+                "新增收藏失敗：",
+                error
+            );
+
+
+            alert(
+                "新增收藏失敗，請稍後再試。"
+            );
+
+
+            button.dataset.loading =
+                "false";
+
+            return;
+
+        }
+
+
+        // --------------------------
+        // 更新前端資料
+        // --------------------------
+
+        item.ownerships.push(
+            data
+        );
+
+
+        button.classList.add(
+            "owned"
+        );
+
+    }
+
+
+    button.dataset.loading =
+        "false";
+
+
+    // ==========================
+    // 更新畫面
+    // ==========================
+
+    updateStats();
+
+    filterCollection();
+
+}
+
+
+// ==============================
+// 搜尋 + 篩選
+// ==============================
+
+function filterCollection() {
+
+    const keyword =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    const filteredData =
+        collectionData.filter(
+            function (item) {
+
+
+                // ==================
+                // 搜尋
+                // ==================
+
+                const matchKeyword =
+                    item.name
+                        .toLowerCase()
+                        .includes(keyword);
+
+
+                // ==================
+                // 角色
+                // ==================
+
+                const matchCharacter =
+                    selectedCharacter === "all" ||
+                    item.character ===
+                        selectedCharacter;
+
+
+                // ==================
+                // 收藏者
+                // ==================
+
+                let matchOwner = true;
+
+
+                // 全部
+
+                if (
+                    selectedOwner === "all"
+                ) {
+
+                    matchOwner = true;
+
+                }
+
+
+                // Both
+
+                else if (
+                    selectedOwner === "both"
+                ) {
+
+                    matchOwner =
+                        membersData.length >= 2 &&
+                        membersData.every(
+                            function (member) {
+
+                                return isOwnedBy(
+                                    item,
+                                    member.id
+                                );
+
+                            }
+                        );
+
+                }
+
+
+                // 指定收藏者
+
+                else {
+
+                    matchOwner =
+                        isOwnedBy(
+                            item,
+                            selectedOwner
+                        );
+
+                }
+
+
+                return (
+
+                    matchKeyword &&
+                    matchCharacter &&
+                    matchOwner
+
+                );
+
+            }
+        );
+
+
+    renderCollection(
+        filteredData
+    );
 
 }
 
@@ -297,57 +1179,7 @@ searchInput.addEventListener(
 
 
 // ==============================
-// 篩選
-// ==============================
-
-function filterCollection() {
-
-    const keyword =
-        searchInput.value
-            .toLowerCase();
-
-
-    const filteredData =
-        collectionData.filter(function (item) {
-
-
-            const matchKeyword =
-
-                item.name
-                    .toLowerCase()
-                    .includes(keyword);
-
-
-            const matchCharacter =
-
-                selectedCharacter === "all" ||
-                item.character === selectedCharacter;
-
-
-            const matchOwner =
-
-                selectedOwner === "all" ||
-                item.owners.includes(selectedOwner);
-
-
-            return (
-
-                matchKeyword &&
-                matchCharacter &&
-                matchOwner
-
-            );
-
-        });
-
-
-    renderCollection(filteredData);
-
-}
-
-
-// ==============================
-// 角色篩選按鈕
+// 角色篩選
 // ==============================
 
 characterButtons.forEach(
@@ -387,61 +1219,79 @@ characterButtons.forEach(
 
 
 // ==============================
-// 收藏者篩選按鈕
+// 更新統計
 // ==============================
 
-ownerButtons.forEach(
-    function (button) {
+function updateStats() {
 
-        button.addEventListener(
-            "click",
-            function () {
-
-                selectedOwner =
-                    button.dataset.owner;
+    const total =
+        collectionData.length;
 
 
-                ownerButtons.forEach(
-                    function (btn) {
+    const owned =
+        collectionData.filter(
+            function (item) {
 
-                        btn.classList.remove(
-                            "active"
-                        );
-
-                    }
-                );
-
-
-                button.classList.add(
-                    "active"
-                );
-
-
-                filterCollection();
+                return item.ownerships &&
+                    item.ownerships.length > 0;
 
             }
+        ).length;
+
+
+    const percent =
+        total === 0
+            ? 0
+            : Math.round(
+                (owned / total) * 100
+            );
+
+
+    totalCount.textContent =
+        total;
+
+
+    ownedCount.textContent =
+        owned;
+
+
+    progressPercent.textContent =
+        `${percent}%`;
+
+
+    progressBar.style.width =
+        `${percent}%`;
+
+}
+
+
+// ==============================
+// HTML Escape
+// ==============================
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
         );
-
-    }
-);
-
-
-// ==============================
-// 計算收藏數量
-// ==============================
-
-function updateCollectionCount() {
-
-    const ownedCount =
-        collectionData.filter(function (item) {
-
-            return item.status === "owned";
-
-        }).length;
-
-
-    collectionCount.textContent =
-        `目前共收藏 ${ownedCount} 件`;
 
 }
 
@@ -450,5 +1300,26 @@ function updateCollectionCount() {
 // 啟動
 // ==============================
 
-loadCollection();
+async function init() {
 
+    console.log(
+        "開始初始化收藏網站..."
+    );
+
+
+    // 先取得 members
+    await loadMembers();
+
+
+    // 再取得 items
+    await loadCollection();
+
+
+    console.log(
+        "收藏網站初始化完成。"
+    );
+
+}
+
+
+init();

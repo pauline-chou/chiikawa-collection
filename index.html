@@ -5,69 +5,191 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>我們的吉伊卡哇收藏</title>
+    <title>Chiikawa Collection</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Noto+Sans+TC:wght@400;500;600&display=swap"
+        rel="stylesheet"
+    >
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <header>
-        <h1>🧸 我們的吉伊卡哇收藏</h1>
-        <p>吉伊 × 小八 收藏簿</p>
+    <header class="site-header">
+
+        <div class="header-decoration decoration-left">✿</div>
+        <div class="header-decoration decoration-right">＊</div>
+
+        <p class="eyebrow">OUR LITTLE COLLECTION</p>
+
+        <h1>
+            Chiikawa
+            <span>Collection</span>
+        </h1>
+
+        <p class="subtitle">
+            Pauline × Alice
+        </p>
+
     </header>
 
+
     <main>
-        <!-- 收藏總覽 -->
-        <section class="overview">
 
-            <h2>🧸 我們的收藏</h2>
+        <!-- =========================
+             收藏統計
+        ========================== -->
 
-            <p id="collection-count">目前共收藏 0 件</p>
+        <section class="collection-intro">
+
+            <div class="intro-title">
+                <span>OUR COLLECTION</span>
+                <span class="tiny-line"></span>
+            </div>
+
+            <div class="stats">
+
+                <div class="stat">
+                    <strong id="owned-count">0</strong>
+                    <span>COLLECTED</span>
+                </div>
+
+                <div class="stat">
+                    <strong id="total-count">0</strong>
+                    <span>ITEMS</span>
+                </div>
+
+                <div class="stat">
+                    <strong id="progress-percent">0%</strong>
+                    <span>PROGRESS</span>
+                </div>
+
+            </div>
 
             <div class="progress">
-                <div class="progress-bar"></div>
+                <div
+                    class="progress-bar"
+                    id="progress-bar"
+                ></div>
             </div>
 
         </section>
 
 
-        <!-- 搜尋與篩選 -->
-        <section class="filters">
+        <!-- =========================
+             篩選
+        ========================== -->
 
-            <h2>🔎 找找看</h2>
+        <section class="toolbar">
 
-            <input
-                type="text"
-                id="search-input"
-                placeholder="搜尋收藏名稱..."
-            >
+            <div class="toolbar-top">
 
-            <div class="filter-group">
+                <div class="section-label">
+                    COLLECTION
+                </div>
 
-                <h3>角色</h3>
+                <div class="search-box">
 
-                <div class="filter-buttons">
+                    <span>⌕</span>
 
-                    <button data-character="all">全部</button>
-                    <button data-character="吉伊">吉伊</button>
-                    <button data-character="小八">小八</button>
-                    <button data-character="其他">其他</button>
+                    <input
+                        type="text"
+                        id="search-input"
+                        placeholder="Search collection..."
+                    >
 
                 </div>
 
             </div>
 
 
-            <div class="filter-group">
+            <!-- 收藏者 -->
 
-                <h3>收藏者</h3>
+            <div class="filter-row">
+
+                <span class="filter-title">
+                    OWNER
+                </span>
 
                 <div class="filter-buttons">
 
-                    <button data-owner="all">全部</button>
-                    <button data-owner="我">我</button>
-                    <button data-owner="朋友">朋友</button>
+                    <button
+                        class="filter-button active"
+                        data-owner="all"
+                    >
+                        All
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        data-owner="我"
+                    >
+                        <span class="owner-dot pauline"></span>
+                        Pauline
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        data-owner="朋友"
+                    >
+                        <span class="owner-dot alice"></span>
+                        Alice
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        data-owner="both"
+                    >
+                        Both
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- 角色 -->
+
+            <div class="filter-row">
+
+                <span class="filter-title">
+                    CHARACTER
+                </span>
+
+                <div class="filter-buttons">
+
+                    <button
+                        class="filter-button active"
+                        data-character="all"
+                    >
+                        All
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        data-character="吉伊"
+                    >
+                        吉伊
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        data-character="小八"
+                    >
+                        小八
+                    </button>
+
+                    <button
+                        class="filter-button"
+                        data-character="其他"
+                    >
+                        其他
+                    </button>
 
                 </div>
 
@@ -76,20 +198,49 @@
         </section>
 
 
-        <!-- 收藏牆 -->
+        <!-- =========================
+             收藏列表
+        ========================== -->
+
         <section class="collection-section">
 
-            <h2>✨ 收藏牆</h2>
+            <div class="collection-heading">
 
-            <div class="collection" id="collection-list">
-     
+                <div>
+                    <p class="eyebrow">THE LITTLE THINGS</p>
+                    <h2>Collection</h2>
+                </div>
+
+                <span id="result-count">
+                    0 items
+                </span>
+
             </div>
+
+
+            <div
+                class="collection"
+                id="collection-list"
+            ></div>
 
         </section>
 
     </main>
 
+
+    <footer>
+
+        <span>♡</span>
+
+        made by Pauline
+
+        <span>♡</span>
+
+    </footer>
+
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script src="script.js"></script>
 
 </body>
