@@ -845,23 +845,109 @@ footer:hover::before {
 }
 
 /* ========================================
-   Tablet
-   ======================================== */
-
-@media (max-width: 1000px) {
-    .collection {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 26px 18px;
-    }
-}
-
-/* ========================================
    Mobile
    ======================================== */
 
 @media (max-width: 700px) {
 
-    /* ---------- Header ---------- */
+    /* ---------- 卡片：手機取消動畫 ---------- */
+
+    .item {
+        transition: none;
+    }
+
+    .item:hover {
+        transform: none;
+        border-color: #eee3d7;
+        box-shadow: 0 4px 12px rgba(120, 96, 72, 0.045);
+    }
+
+    .item:hover::before {
+        opacity: 0;
+        transform: none;
+    }
+
+    .item-image img {
+        transition: none;
+    }
+
+    .item:hover .item-image img {
+        transform: none;
+    }
+
+    .item-image::after {
+        display: none;
+    }
+
+    .item:hover .item-image::after {
+        opacity: 0;
+    }
+
+    .item-name {
+        transition: none;
+    }
+
+    .item:hover .item-name {
+        color: var(--text);
+    }
+
+
+    /* ---------- Tags：手機取消浮動 ---------- */
+
+    .tags span {
+        transition: none;
+    }
+
+    .tags span:hover {
+        background: #fffaf2;
+        border-color: #eadfd3;
+        color: #988a7b;
+        transform: none;
+        box-shadow: none;
+    }
+
+
+    /* ========================================
+       Owner Buttons
+       手機保留顏色變化
+       但不要上下移動
+       ======================================== */
+
+    .owner-toggle {
+        /* 保留按下縮小 */
+        transition:
+            background 0.2s ease,
+            border-color 0.2s ease,
+            color 0.2s ease,
+            box-shadow 0.2s ease,
+            transform 0.15s ease;
+    }
+
+    /* 藍色按鈕 */
+    .owner-toggle.player1:hover {
+        transform: none;
+    }
+
+    .owner-toggle.player1:hover .dot {
+        transform: scale(1.15);
+    }
+
+    /* 粉色按鈕 */
+    .owner-toggle.player2:hover {
+        transform: none;
+    }
+
+    .owner-toggle.player2:hover .dot {
+        transform: scale(1.15);
+    }
+
+    /* 按下時還是有一點點回饋 */
+    .owner-toggle:active {
+        transform: scale(0.95);
+    }
+
+
+    /* ---------- 其他手機尺寸 ---------- */
 
     header {
         padding: 48px 18px 28px;
@@ -869,48 +955,17 @@ footer:hover::before {
 
     header h1 {
         font-size: 32px;
-        letter-spacing: 0.06em;
-    }
-
-    header h1::before {
-        left: -12px;
-        right: -12px;
-        height: 8px;
-    }
-
-    header h1::after {
-        margin-left: 6px;
     }
 
     header p {
-        margin-top: 10px;
         font-size: 13px;
-        letter-spacing: 0.1em;
     }
-
-    header::before {
-        left: 3%;
-        top: 30px;
-        font-size: 25px;
-    }
-
-    header::after {
-        right: 4%;
-        top: 40px;
-        font-size: 23px;
-    }
-
-
-    /* ---------- Main ---------- */
 
     main {
         width: calc(100% - 24px);
         max-width: none;
-        margin: 0 auto 50px;
+        margin-bottom: 50px;
     }
-
-
-    /* ---------- Overview ---------- */
 
     .overview {
         padding: 21px 18px 22px;
@@ -918,20 +973,7 @@ footer:hover::before {
         border-radius: 18px;
     }
 
-    .overview::before {
-        right: 14px;
-        top: 12px;
-        font-size: 8px;
-    }
-
-    .overview::after {
-        right: 15px;
-        bottom: -12px;
-        font-size: 48px;
-    }
-
     .overview h2 {
-        margin-bottom: 3px;
         font-size: 19px;
     }
 
@@ -939,9 +981,6 @@ footer:hover::before {
         margin-bottom: 15px;
         font-size: 12px;
     }
-
-
-    /* ---------- Stats ---------- */
 
     .stats {
         gap: 20px;
@@ -953,15 +992,17 @@ footer:hover::before {
     }
 
     .stat-label {
-        margin-top: 3px;
         font-size: 10px;
     }
 
-
-    /* ---------- Progress ---------- */
-
+    /* ⭐ 進度條完全保留 */
     .progress {
         height: 9px;
+    }
+
+    .progress-bar,
+    #progress-bar {
+        transition: width 0.6s cubic-bezier(.22, 1, .36, 1);
     }
 
 
@@ -973,19 +1014,9 @@ footer:hover::before {
         border-radius: 17px;
     }
 
-    .filters::after {
-        right: 13px;
-        bottom: 9px;
-        font-size: 17px;
-    }
-
     .filters h2 {
-        margin-bottom: 14px;
         font-size: 19px;
     }
-
-
-    /* ---------- Search ---------- */
 
     #search-input {
         padding: 11px 14px;
@@ -993,15 +1024,11 @@ footer:hover::before {
         border-radius: 12px;
     }
 
-
-    /* ---------- Filter Buttons ---------- */
-
     .filter-group {
         margin-top: 17px;
     }
 
     .filter-group h3 {
-        margin-bottom: 8px;
         font-size: 11px;
     }
 
@@ -1015,102 +1042,41 @@ footer:hover::before {
     }
 
 
-    /* ---------- Collection Header ---------- */
+    /* ---------- Collection ---------- */
 
     .collection-section h2 {
-        margin-bottom: 4px;
         font-size: 21px;
     }
 
     #result-count {
-        margin-bottom: 18px;
         font-size: 11px;
     }
-
-
-    /* ---------- Collection Grid ---------- */
 
     .collection {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 21px 11px;
     }
 
-
-    /* ---------- Item ---------- */
-
     .item {
         padding: 7px 7px 11px;
         border-radius: 17px;
-
-        /* 手機不要卡片 hover 位移 */
-        transition: none;
     }
-
-    /* 手機完全取消卡片 hover */
-    .item:hover {
-        transform: none;
-        border-color: #eee3d7;
-        box-shadow: 0 4px 12px rgba(120, 96, 72, 0.045);
-    }
-
-    /* 手機不要愛心 */
-    .item:hover::before {
-        opacity: 0;
-        transform: none;
-    }
-
-
-    /* ---------- Item Image ---------- */
 
     .item-image {
         border-radius: 13px;
     }
-
-    /* 手機不要圖片放大 */
-    .item-image img {
-        transition: none;
-    }
-
-    .item:hover .item-image img {
-        transform: none;
-    }
-
-    /* 手機不要圖片亮光 */
-    .item-image::after {
-        display: none;
-    }
-
-    .item:hover .item-image::after {
-        opacity: 0;
-    }
-
-
-    /* ---------- Item Info ---------- */
 
     .item-info {
         padding: 8px 2px 0;
     }
 
     .item-name {
-        margin-bottom: 3px;
         font-size: 14px;
-        line-height: 1.45;
-
-        /* 不需要 hover 顏色變化 */
-        transition: none;
-    }
-
-    .item:hover .item-name {
-        color: var(--text);
     }
 
     .item-series {
-        margin-bottom: 7px;
         font-size: 10px;
     }
-
-
-    /* ---------- Tags ---------- */
 
     .tags {
         gap: 3px;
@@ -1120,40 +1086,15 @@ footer:hover::before {
     .tags span {
         padding: 2px 5px;
         font-size: 9px;
-        border-radius: 6px;
-
-        /* 手機標籤不要 hover 動畫 */
-        transition: none;
-    }
-
-    .tags span:hover {
-        background: #fffaf2;
-        border-color: #eadfd3;
-        color: #988a7b;
-        transform: none;
-        box-shadow: none;
-    }
-
-
-    /* ---------- Owner ---------- */
-
-    .owner-section {
-        margin-top: 1px;
     }
 
     .owner-title {
-        margin-bottom: 5px;
         font-size: 9px;
-    }
-
-    .owner-buttons {
-        gap: 5px;
     }
 
     .owner-toggle {
         padding: 4px 7px;
         font-size: 9px;
-        gap: 4px;
     }
 
     .owner-toggle .dot {
@@ -1161,158 +1102,5 @@ footer:hover::before {
         height: 6px;
         flex-basis: 6px;
     }
-
-
-    /* ---------- Empty ---------- */
-
-    .empty-message {
-        padding: 55px 15px;
-    }
-
-
-    /* ---------- Loading ---------- */
-
-    .loading {
-        padding: 55px 15px;
-    }
-
-
-    /* ---------- Footer ---------- */
-
-    footer {
-        padding: 28px 15px 42px;
-        font-size: 10px;
-    }
-
-    footer::before {
-        margin-bottom: 9px;
-        font-size: 11px;
-    }
 }
 
-
-/* ========================================
-   Small Mobile
-   ======================================== */
-
-@media (max-width: 400px) {
-
-    header {
-        padding-top: 43px;
-    }
-
-    header h1 {
-        font-size: 29px;
-    }
-
-    header p {
-        font-size: 12px;
-    }
-
-    header::before {
-        top: 27px;
-        font-size: 22px;
-    }
-
-    header::after {
-        top: 35px;
-        font-size: 20px;
-    }
-
-
-    main {
-        width: calc(100% - 20px);
-    }
-
-
-    .overview {
-        padding: 19px 15px 20px;
-    }
-
-    .overview h2 {
-        font-size: 18px;
-    }
-
-    .stats {
-        gap: 17px;
-    }
-
-    .stat-number {
-        font-size: 22px;
-    }
-
-    .stat-label {
-        font-size: 9px;
-    }
-
-
-    .filters {
-        padding: 18px 13px 20px;
-    }
-
-    .filters h2 {
-        font-size: 18px;
-    }
-
-
-    .filter-buttons button {
-        padding: 5px 9px;
-        font-size: 10px;
-    }
-
-
-    .collection-section h2 {
-        font-size: 20px;
-    }
-
-
-    .collection {
-        gap: 19px 8px;
-    }
-
-
-    .item {
-        padding: 6px 6px 9px;
-        border-radius: 15px;
-    }
-
-    .item-image {
-        border-radius: 11px;
-    }
-
-    .item-info {
-        padding-top: 7px;
-    }
-
-    .item-name {
-        font-size: 13px;
-    }
-
-    .item-series {
-        font-size: 9px;
-    }
-
-    .tags {
-        margin-bottom: 7px;
-    }
-
-    .tags span {
-        padding: 2px 4px;
-        font-size: 8px;
-    }
-
-    .owner-title {
-        font-size: 8px;
-    }
-
-    .owner-toggle {
-        padding: 3px 6px;
-        font-size: 8px;
-    }
-
-    .owner-toggle .dot {
-        width: 5px;
-        height: 5px;
-        flex-basis: 5px;
-    }
-}
