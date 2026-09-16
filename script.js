@@ -72,54 +72,6 @@ let membersData = [];
 
 
 // ==============================
-// 取得收藏者
-// ==============================
-
-async function loadMembers() {
-
-    console.log("正在取得 members...");
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("members")
-            .select(`
-                id,
-                name
-            `)
-            .order("id");
-
-
-    if (error) {
-
-        console.error(
-            "members 讀取失敗：",
-            error
-        );
-
-        return;
-
-    }
-
-
-    membersData = data || [];
-
-
-    console.log(
-        "收藏者：",
-        membersData
-    );
-
-
-    renderOwnerFilters();
-
-}
-
-
-// ==============================
 // 建立收藏者篩選按鈕
 // ==============================
 
@@ -519,26 +471,94 @@ function isOwnedBy(
 
 }
 
-
 // ==============================
-// 取得收藏者名稱
+// 取得收藏者
 // ==============================
 
-function getOwnerNames(item) {
+async function loadMembers() {
 
-    return item.ownerships
-        .map(
-            function (ownership) {
+    console.log("正在取得 members...");
 
-                return ownership.members
-                    ? ownership.members.name
-                    : "";
+    // --------------------------
+    // 取得所有 members
+    // --------------------------
 
-            }
-        )
-        .filter(Boolean);
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("members")
+            .select(`
+                id,
+                name,
+                space_id
+            `)
+            .order("id");
+
+
+    // --------------------------
+    // 錯誤處理
+    // --------------------------
+
+    if (error) {
+
+        console.error(
+            "members 讀取失敗：",
+            error
+        );
+
+        return;
+
+    }
+
+
+    // --------------------------
+    // 儲存成員資料
+    // --------------------------
+
+    membersData = data || [];
+
+
+    console.log(
+        "Supabase members：",
+        membersData
+    );
+
+
+    // --------------------------
+    // 顯示收藏者名稱
+    // --------------------------
+
+    const memberNamesElement =
+        document.getElementById("memberNames");
+
+
+    if (memberNamesElement) {
+
+        memberNamesElement.textContent =
+            membersData
+                .map(function (member) {
+                    return member.name;
+                })
+                .join(" × ");
+
+    }
+
+
+    // --------------------------
+    // 建立收藏者篩選按鈕
+    // --------------------------
+
+    renderOwnerFilters();
 
 }
+
+
+
+
+
+
 
 
 // ==============================

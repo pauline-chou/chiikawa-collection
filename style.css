@@ -1,6 +1,5 @@
 /* ========================================
    Chiikawa Collection
-   Japanese Kawaii / Collection Notebook
    ======================================== */
 
 :root {
@@ -795,7 +794,7 @@ footer {
 }
 
 footer::before {
-    content: "✿  ･ﾟ✧  ♡  ✧ﾟ･  ✿";
+    content: "✿ ･ ♡ ･ ✿･ ♡ ･ ✿";
     display: block;
     margin-bottom: 12px;
     color: #d6c397;
